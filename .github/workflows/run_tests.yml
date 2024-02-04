@@ -75,7 +75,6 @@ jobs:
         shell: bash
         run: |
           mkdir -p ${{ env.ALLURE_FOLDER }}
-          docker login ${{ secrets.DOCKER_REG }} -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           if [[ -n "$(docker ps -a | grep ${{ env.GIT_BRANCH_TESTS }}-test)" ]]; then docker rm -f ${{ env.GIT_BRANCH_TESTS }}-test; fi
           docker run \
             --network ${{ env.GIT_BRANCH_TESTS }} \
