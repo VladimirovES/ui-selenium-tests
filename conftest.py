@@ -78,8 +78,6 @@ def registration_users(base_url):
         user.userId = AccountApi(base_url=base_url, module='Account').create_user(user)['userID']
 
 
-
-
 def get_api_client(base_url, user: UserAccountResponse):
     user.token = AccountApi(base_url=base_url, module='Account').generate_token(user=user)['token']
     return ApiFacade(base_url=base_url, auth_token=user.token)
@@ -98,4 +96,3 @@ def registration_page(browser, base_url) -> RegistrationPage:
 @pytest.fixture()
 def profile_page(browser, base_url):
     return ProfilePage(browser, base_url)
-
