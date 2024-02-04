@@ -40,7 +40,7 @@ jobs:
           path: test-rep
 
       - name: Build Docker image
-        run: docker build test-rep/ -t mytestimage -f test-rep/Dockerfile .
+        run: docker build test-rep/ -t mytestimage -f test-rep/Dockerfile
 
 
 
