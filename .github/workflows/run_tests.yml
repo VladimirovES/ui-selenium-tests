@@ -39,7 +39,12 @@ jobs:
           path: test
 
       - name: Build Docker image
-        run: docker build -t test/Dockerfile .
+        run: docker build -t testimage -f test/Dockerfile .
+
+      - name: "Set allure envs"
+        shell: bash
+        run: |
+          echo "ALLURE_FOLDER=results-${{ env.GIT_BRANCH_TESTS }}" >> $GITHUB_ENV
 
       - name: "Create network"
         shell: bash
@@ -64,7 +69,7 @@ jobs:
                 aerokube/selenoid:latest -conf /browser.json -container-network ${{ env.GIT_BRANCH_TESTS }}
           docker cp ./browser.configured.json ${{ env.GIT_BRANCH_TESTS }}-selenoid:/browser.json
           docker restart ${{ env.GIT_BRANCH_TESTS }}-selenoid
-          
+
       - name: "Run tests"
         shell: bash
         run: |
@@ -74,9 +79,7 @@ jobs:
           docker run \
             --network ${{ env.GIT_BRANCH_TESTS }} \
             --name ${{ env.GIT_BRANCH_TESTS }}-test \
-            bash -c "if [[ '${{ github.event.inputs.marking }}' == 'profile' ]]; then
-                       pytest -m 'profile' --remote_browser --browser_name=${{ github.event.inputs.browser }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }} ;
+            bash -c "if [[ '${{ github.event.inputs.marking }}' == 'profile' ]]; then pytest -m 'profile' --remote_browser --browser_name=${{ github.event.inputs.browser }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }} ; fi"
 
-#
 
 
