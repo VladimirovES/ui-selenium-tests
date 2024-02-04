@@ -6,8 +6,8 @@ RUN apt update && apt install -y apt-transport-https ca-certificates curl gnupg2
     && apt update \
     && apt -y install docker-ce
 
-WORKDIR /simple_solution_ui_test/
-COPY ./ /simple_solution_ui_test/
+WORKDIR /selenium-pytest-allure/
+COPY ./ /selenium-pytest-allure/
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1

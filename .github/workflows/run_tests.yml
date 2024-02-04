@@ -22,6 +22,7 @@ on:
         required: true
         default: "https://demoqa.com/"
         type: string
+
 jobs:
   tests:
     name: Run tests
@@ -39,7 +40,7 @@ jobs:
           path: test
 
       - name: Build Docker image
-        run: docker build -t testimage -f test/Dockerfile .
+        run: docker build -t mytestimage -f test/Dockerfile .
 
       - name: "Set allure envs"
         shell: bash
@@ -66,7 +67,7 @@ jobs:
                 --hostname selenoid \
                 --name ${{ env.GIT_BRANCH_TESTS }}-selenoid \
                 --volume /var/run/docker.sock:/var/run/docker.sock \
-                aerokube/selenoid:latest -conf /browser.json -container-network ${{ env.GIT_BRANCH_TESTS }}
+                aerokube/selenoid:latest -conf /browser.json --container-network ${{ env.GIT_BRANCH_TESTS }}
           docker cp ./browser.configured.json ${{ env.GIT_BRANCH_TESTS }}-selenoid:/browser.json
           docker restart ${{ env.GIT_BRANCH_TESTS }}-selenoid
 
@@ -79,7 +80,4 @@ jobs:
           docker run \
             --network ${{ env.GIT_BRANCH_TESTS }} \
             --name ${{ env.GIT_BRANCH_TESTS }}-test \
-            bash -c "if [[ '${{ github.event.inputs.marking }}' == 'profile' ]]; then pytest -m 'profile' --remote_browser --browser_name=${{ github.event.inputs.browser }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }} ; fi"
-
-
-
+            pytest -m 'profile' --remote_browser --browser_name=${{ github.event.inputs.browser }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
