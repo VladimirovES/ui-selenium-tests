@@ -20,7 +20,7 @@ on:
       base_url:
         description: "URL"
         required: true
-        default: "http://nginx:8080/"
+        default: "https://demoqa.com/"
         type: string
 jobs:
   tests:
