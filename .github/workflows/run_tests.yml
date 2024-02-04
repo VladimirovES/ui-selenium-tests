@@ -39,6 +39,7 @@ jobs:
           ref: ${{ env.GIT_BRANCH_TESTS }}
           path: test-rep
 
+
       - name: Build Docker image
         run: docker build test-rep/ -t mytestimage -f test-rep/Dockerfile
 
@@ -77,4 +78,4 @@ jobs:
           docker run \
             --network ${{ env.GIT_BRANCH_TESTS }} \
             --name ${{ env.GIT_BRANCH_TESTS }}-test \
-            mytestimage pytest -m 'profile' --remote_browser --browser_name=${{ github.event.inputs.browser }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
+            mytestimage pytest -k 'test_user_name_eql' --remote_browser --browser_name=${{ github.event.inputs.browser }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
