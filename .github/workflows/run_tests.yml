@@ -73,11 +73,8 @@ jobs:
           docker restart ${{ env.GIT_BRANCH_TESTS }}-selenoid
 
       - name: "Run tests"
-        shell: bash
         run: |
-          mkdir -p ${{ env.ALLURE_FOLDER }}
-          if [[ -n "$(docker ps -a | grep ${{ env.GIT_BRANCH_TESTS }}-test)" ]]; then docker rm -f ${{ env.GIT_BRANCH_TESTS }}-test; fi
           docker run \
             --network ${{ env.GIT_BRANCH_TESTS }} \
             --name ${{ env.GIT_BRANCH_TESTS }}-test \
-            pytest -m 'profile' --remote_browser --browser_name=${{ github.event.inputs.browser }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
+            mytestimage pytest -m 'profile' --remote_browser --browser_name=${{ github.event.inputs.browser }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
