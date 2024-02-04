@@ -37,10 +37,12 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ env.GIT_BRANCH_TESTS }}
-          path: test
+          path: test-rep
 
       - name: Build Docker image
-        run: docker build -t mytestimage -f test/Dockerfile .
+        run: docker build test-rep/ -t mytestimage -f test-rep/Dockerfile .
+
+
 
       - name: "Set allure envs"
         shell: bash
