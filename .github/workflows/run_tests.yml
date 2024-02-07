@@ -139,6 +139,11 @@ jobs:
         run: |
           docker cp ${{ env.GIT_BRANCH_TESTS }}-test:/selenium-pytest-allure/${{ env.ALLURE_FOLDER }} ./allure-results
 
+      - name: "Copy allure results from container"
+        if: ${{ always() }}
+        run: |
+          docker cp ${{ env.GIT_BRANCH_TESTS }}-test:/selenium-pytest-allure/${{ env.ALLURE_FOLDER }} ./
+
       - name: "Upload Allure results as an artifact"
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
