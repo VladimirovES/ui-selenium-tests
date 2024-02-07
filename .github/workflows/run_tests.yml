@@ -99,6 +99,17 @@ jobs:
           docker cp ./browser.configured.json ${{ env.GIT_BRANCH_TESTS }}-selenoid:/browser.json
           docker restart ${{ env.GIT_BRANCH_TESTS }}-selenoid
 
+      - name: "List contents of /selenium-pytest-allure directory"
+        run: docker exec ${{ env.GIT_BRANCH_TESTS }}-test ls
+
+      - name: "List directories and files"
+        run: docker exec ls
+
+      - name: "List contents of /selenium-pytest-allure directory"
+        run: docker exec ${{ env.GIT_BRANCH_TESTS }}-test ls -la /selenium-pytest-allure
+
+
+
       - name: "Run tests"
         run: |
           docker run \
