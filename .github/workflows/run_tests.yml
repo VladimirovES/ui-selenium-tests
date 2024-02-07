@@ -109,12 +109,15 @@ jobs:
             ${{ env.MY_IMAGE }} pytest -m ${{ env.MARKING }} --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
 
       - name: "List contents of /selenium-pytest-allure directory"
+        if: ${{ always() }}
         run: docker exec ${{ env.GIT_BRANCH_TESTS }}-test ls
 
       - name: "List directories and files"
+        if: ${{ always() }}
         run: docker exec ls
 
       - name: "List contents of /selenium-pytest-allure directory"
+        if: ${{ always() }}
         run: docker exec ${{ env.GIT_BRANCH_TESTS }}-test ls -la /selenium-pytest-allure
     
 
