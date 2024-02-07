@@ -100,21 +100,29 @@ jobs:
           docker restart ${{ env.GIT_BRANCH_TESTS }}-selenoid
 
 
+      - name: "List running containers"
+        if: ${{ always() }}
+        run: docker ps
 
-      - name: "Run tests"
+      - name: "Run tests and list results directory"
         run: |
           docker run \
             --network ${{ env.GIT_BRANCH_TESTS }} \
             --name ${{ env.GIT_BRANCH_TESTS }}-test \
-            ${{ env.MY_IMAGE }} pytest -m ${{ env.MARKING }} --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
+            ${{ env.MY_IMAGE }} /bin/sh -c "pytest -m ${{ env.MARKING }} --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}; echo 'Listing results directory:'; ls -la ${{ env.ALLURE_FOLDER }}"
+            
+
+      #      - name: "Run tests"
+#        run: |
+#          docker run \
+#            --network ${{ env.GIT_BRANCH_TESTS }} \
+#            --name ${{ env.GIT_BRANCH_TESTS }}-test \
+#            ${{ env.MY_IMAGE }} pytest -m ${{ env.MARKING }} --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
 
       - name: "List contents of /selenium-pytest-allure directory"
         if: ${{ always() }}
         run: docker exec ${{ env.GIT_BRANCH_TESTS }}-test ls
 
-      - name: "List running containers"
-        if: ${{ always() }}
-        run: docker ps
 
 
       - name: "List directories and files"
