@@ -8,7 +8,9 @@ on:
         required: True
         type: choice
         options:
+          - regress 
           - profile
+          - login
       browser:
         description: "Browser"
         required: true
@@ -36,6 +38,21 @@ jobs:
         shell: bash
         run: |
           echo "GIT_BRANCH_TESTS=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+          
+      - name: Set values for trigger env
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          echo "BROWSER=chrome:100.0" >> $GITHUB_ENV
+          echo "MARKING='regress'" >> $GITHUB_ENV
+          
+
+      - name: Set default values for other workflow dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "BROWSER=${{ github.event.inputs.browser }}" >> $GITHUB_ENV
+          echo "MARKING=${{ github.event.inputs.marking }}" >> $GITHUB_ENV
+
 
       - name: Checkout test code
         uses: actions/checkout@v2
@@ -70,7 +87,7 @@ jobs:
           
           envsubst < test-rep/browser.json > browser.configured.json
           cat browser.configured.json
-          docker pull selenoid/${{ github.event.inputs.browser }}
+          docker pull selenoid/${{ env.BROWSER }}
           
           docker run -d --restart always \
                 --network ${{ env.GIT_BRANCH_TESTS }} \
@@ -87,7 +104,7 @@ jobs:
           docker run \
             --network ${{ env.GIT_BRANCH_TESTS }} \
             --name ${{ env.GIT_BRANCH_TESTS }}-test \
-            ${{ env.MY_IMAGE }} pytest -k 'test_user_name_eql' --remote_browser --browser_name=${{ github.event.inputs.browser }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
+            ${{ env.MY_IMAGE }} pytest -k 'test_user_name_eql' --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
           
   
   
