@@ -23,6 +23,10 @@ on:
         default: "https://demoqa.com/"
         type: string
 
+
+  repository_dispatch:
+    types: [trigger-run-test]
+    
 jobs:
   tests:
     name: Run tests
