@@ -108,10 +108,12 @@ jobs:
           
 
       - name: "Copy allure results from container"
+        if: ${{ always() }}
         run: |
           docker cp ${{ env.GIT_BRANCH_TESTS }}-test:/${{ env.ALLURE_FOLDER }} ./allure-results
 
       - name: "Upload Allure results as an artifact"
+        if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
           name: allure-results
