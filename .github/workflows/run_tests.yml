@@ -107,6 +107,12 @@ jobs:
             ${{ env.MY_IMAGE }} pytest -m ${{ env.MARKING }} --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
           
 
+      - name: "List test results folder"
+        run: |
+          docker exec ${{ env.GIT_BRANCH_TESTS }}-test ls /${{ env.ALLURE_FOLDER }}
+
+          
+
       - name: "Copy allure results from container"
         if: ${{ always() }}
         run: |
