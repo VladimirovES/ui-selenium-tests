@@ -47,7 +47,7 @@ jobs:
           echo "MARKING='regress'" >> $GITHUB_ENV
           
 
-      - name: Set default values for other workflow dispatch
+      - name: Set  values for other workflow dispatch
         if: github.event_name == 'workflow_dispatch'
         run: |
           echo "BROWSER=${{ github.event.inputs.browser }}" >> $GITHUB_ENV
@@ -104,7 +104,7 @@ jobs:
           docker run \
             --network ${{ env.GIT_BRANCH_TESTS }} \
             --name ${{ env.GIT_BRANCH_TESTS }}-test \
-            ${{ env.MY_IMAGE }} pytest -k 'test_user_name_eql' --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
+            ${{ env.MY_IMAGE }} pytest -m ${{ env.MARKING }} --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
           
   
   

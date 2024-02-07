@@ -1,11 +1,9 @@
 import allure
-import pytest
 
 from fixtures.account_fixtures import *
 from data_test.user_data import UserData
 from pages.base.app_facade import AppFacade
 from pages.profile_page.profile_page import ProfilePage
-from pages.register_page.page import RegistrationPage
 from utils.api.account_api import AccountApi
 from utils.api.api_facade import ApiFacade
 from utils.driver_factory import DriverFactory
@@ -85,16 +83,6 @@ def api_client(base_url, registration_user):
     api_client = ApiFacade(base_url=base_url, auth_token=registration_user.token)
     yield api_client
     api_client.account.delete_user(registration_user)
-
-
-@pytest.fixture()
-def registration_page(browser, base_url) -> RegistrationPage:
-    return RegistrationPage(browser, base_url)
-
-
-@pytest.fixture()
-def profile_page(browser, base_url):
-    return ProfilePage(browser, base_url)
 
 
 @pytest.fixture()

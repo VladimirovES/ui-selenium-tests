@@ -27,6 +27,3 @@ class ProfilePage(BasePage):
         self.input_search_book = Input(self._driver,
                                        locator=(By.XPATH, "//input[@id='searchBox']"),
                                        name='Search Books')
-
-
-

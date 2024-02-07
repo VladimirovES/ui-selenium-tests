@@ -2,7 +2,11 @@ import random
 import string
 
 from faker import Faker
+class GeneralGenerator:
 
+    @staticmethod
+    def generate_random_string(length=10):
+        return "".join(random.choice(string.ascii_lowercase) for _ in range(length))
 
 class UserDataGenerator:
     fake = Faker()
