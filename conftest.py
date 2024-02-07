@@ -1,10 +1,8 @@
-from typing import Dict
 
 import allure
 import pytest
 
 from data_test.user_data import UserData
-from models.user import UserAccountPayload, UserAccountResponse
 from pages.profile_page.profile_page import ProfilePage
 from pages.register_page.page import RegistrationPage
 from utils.api.account_api import AccountApi
@@ -38,7 +36,7 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope='session')
-def browser(request, base_url, registration_users, api_clients):
+def browser(request, base_url, api_client):
     browser_name = request.config.getoption('--browser_name')
     headless = request.config.getoption('--headless')
     remote = request.config.getoption('--remote_browser')
@@ -73,19 +71,20 @@ def pytest_runtest_makereport(item):
 
 
 @pytest.fixture(scope='session')
-def registration_users(base_url):
-    for user in UserData.all_users:
-        user.userId = AccountApi(base_url=base_url, module='Account').create_user(user)['userID']
-
-
-def get_api_client(base_url, user: UserAccountResponse):
-    user.token = AccountApi(base_url=base_url, module='Account').generate_token(user=user)['token']
-    return ApiFacade(base_url=base_url, auth_token=user.token)
+def registration_user(base_url):
+    user = UserData.user1
+    user.userId = AccountApi(base_url=base_url, module='Account').create_user(user)['userID']
+    return user
 
 
 @pytest.fixture(scope='session')
-def api_clients(base_url) -> Dict[str, ApiFacade]:
-    return {user.userId: get_api_client(base_url=base_url, user=user) for user in UserData.all_users}
+def api_client(base_url, registration_user):
+    registration_user.token = AccountApi(base_url=base_url, module='Account').generate_token(user=registration_user)[
+        'token']
+    api_client = ApiFacade(base_url=base_url, auth_token=registration_user.token)
+    yield api_client
+    api_client.account.delete_user(registration_user)
+
 
 
 @pytest.fixture()

@@ -1,7 +1,7 @@
 import allure
 from selenium import webdriver
 
-from models.user import UserAccountResponse
+from models.user import UserAccount
 
 
 class BasePage:
@@ -15,7 +15,7 @@ class BasePage:
         with allure.step(f"Открыть страницу {url}"):
             self._driver.get(url)
 
-    def auth(self, user: UserAccountResponse):
+    def auth(self, user: UserAccount):
         with allure.step(f"Добавить куки для пользователя: {user.userId}"):
             self._driver.get(self.host)
             cookies = {'token': user.token,

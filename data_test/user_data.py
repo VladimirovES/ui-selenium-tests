@@ -1,9 +1,10 @@
-from models.user import UserAccountResponse
+from models.user import UserAccount
 
 
 class UserData:
 
-    user1 = UserAccountResponse()
-    user2 = UserAccountResponse()
+    user1 = UserAccount()
+    user2 = UserAccount()
+    user_changes = UserAccount()
 
     all_users = (user1, user2)

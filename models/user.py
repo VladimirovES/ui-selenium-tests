@@ -23,7 +23,7 @@ class UserAccountPayload(BaseModel):
     # password: str
 
 
-class UserAccountResponse(UserAccountPayload):
+class UserAccount(UserAccountPayload):
     create_date: str = None
     expires: str = None
     isActive: bool = None
