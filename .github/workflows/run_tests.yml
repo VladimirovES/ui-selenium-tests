@@ -105,18 +105,13 @@ jobs:
             --network ${{ env.GIT_BRANCH_TESTS }} \
             --name ${{ env.GIT_BRANCH_TESTS }}-test \
             ${{ env.MY_IMAGE }} pytest -m ${{ env.MARKING }} --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
-          
-
-      - name: "List test results folder"
-        run: |
-          docker exec ${{ env.GIT_BRANCH_TESTS }}-test ls /${{ env.ALLURE_FOLDER }}
-
+    
           
 
       - name: "Copy allure results from container"
         if: ${{ always() }}
         run: |
-          docker cp ${{ env.GIT_BRANCH_TESTS }}-test:/${{ env.ALLURE_FOLDER }} ./allure-results
+          docker cp ${{ env.GIT_BRANCH_TESTS }}-test:/selenium-pytest-allure/${{ env.ALLURE_FOLDER }} ./allure-results
 
       - name: "Upload Allure results as an artifact"
         if: ${{ always() }}
