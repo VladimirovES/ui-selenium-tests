@@ -106,6 +106,7 @@ jobs:
 
       - name: "Run tests and list results directory"
         run: |
+          if [[ -n "$(docker ps -a | grep ${{ env.GIT_BRANCH_TESTS }}-test)" ]]; then docker rm -f ${{ env.GIT_BRANCH_TESTS }}-test; fi
           docker run \
             --network ${{ env.GIT_BRANCH_TESTS }} \
             --name ${{ env.GIT_BRANCH_TESTS }}-test \
