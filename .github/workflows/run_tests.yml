@@ -107,7 +107,7 @@ jobs:
       - name: "Run tests, list results directory, and show running containers"
         run: |
           if [[ -n "$(docker ps -a | grep ${{ env.GIT_BRANCH_TESTS }}-test)" ]]; then docker rm -f ${{ env.GIT_BRANCH_TESTS }}-test; fi
-          docker run \
+          docker run -d \
             --network ${{ env.GIT_BRANCH_TESTS }} \
             --name ${{ env.GIT_BRANCH_TESTS }}-test \
             ${{ env.MY_IMAGE }} /bin/sh -c "pytest -m ${{ env.MARKING }} --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}; echo 'Listing results directory:'; ls -la ${{ env.ALLURE_FOLDER }}"
