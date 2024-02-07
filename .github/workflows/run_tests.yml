@@ -125,7 +125,7 @@ jobs:
 
       - name: "List contents of /selenium-pytest-allure directory"
         if: ${{ always() }}
-        run: docker exec ${{ env.GIT_BRANCH_TESTS }}-test ls
+        run: docker exec ${{ env.GIT_BRANCH_TESTS }}-test ls -la /tests
 
 
 
