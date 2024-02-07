@@ -118,6 +118,10 @@ jobs:
         if: ${{ always() }}
         run: docker cp master-test:/ ./container-contents
 
+      - name: "List contents of copied container directory"
+        run: ls -la ./container-contents
+
+
 
       - name: "Copy allure results from container"
         if: ${{ always() }}
