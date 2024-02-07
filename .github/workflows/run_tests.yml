@@ -87,7 +87,7 @@ jobs:
           docker run \
             --network ${{ env.GIT_BRANCH_TESTS }} \
             --name ${{ env.GIT_BRANCH_TESTS }}-test \
-            ${{ env.MY_IMAGE} pytest -k 'test_user_name_eql' --remote_browser --browser_name=${{ github.event.inputs.browser }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
+            ${{ env.MY_IMAGE }} pytest -k 'test_user_name_eql' --remote_browser --browser_name=${{ github.event.inputs.browser }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
           
   
   
