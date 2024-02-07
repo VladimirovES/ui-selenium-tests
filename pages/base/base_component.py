@@ -76,7 +76,7 @@ class Component(ABC):
         with allure.step(f'Нажать {self._type_of}: "{self._format_name(**kwargs)}".'):
             self._find_element(**kwargs).click()
 
-    def check_visibility(self, is_visible=True, **kwargs) -> None:
+    def assert_visibility(self, is_visible=True, **kwargs) -> None:
         vision_text = 'Отображается' if is_visible else 'Не отображается'
         with allure.step(f'Assert: "{self._type_of} - "{self._format_name(**kwargs)}" {vision_text} на странице.'):
             if is_visible:
@@ -148,7 +148,7 @@ class ListElements(Component):
                              name=f'Кол-во "{self._type_of}": "{self._format_name(**kwargs)}" равно: {count}.')
 
 
-class Title(Component):
+class Text(Component):
     @property
     def _type_of(self) -> str:
         return 'Title'

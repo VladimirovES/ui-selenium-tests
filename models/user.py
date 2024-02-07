@@ -18,9 +18,7 @@ class UserRegistrationResponse(BaseModel):
 
 class UserAccountPayload(BaseModel):
     userName: str = Field(default_factory=UserDataGenerator.generate_user_name)
-    # userName: str
-    password: str = Field(default_factory=lambda: UserDataGenerator.generate_password(length=20))
-    # password: str
+    password: str = 'SomePassword!2021'  # Field(default_factory=lambda: UserDataGenerator.generate_password(length=20)) Закомменитл т.к багует
 
 
 class UserAccount(UserAccountPayload):

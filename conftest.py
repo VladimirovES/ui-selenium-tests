@@ -1,8 +1,9 @@
-
 import allure
 import pytest
 
+from fixtures.account_fixtures import *
 from data_test.user_data import UserData
+from pages.base.app_facade import AppFacade
 from pages.profile_page.profile_page import ProfilePage
 from pages.register_page.page import RegistrationPage
 from utils.api.account_api import AccountApi
@@ -86,7 +87,6 @@ def api_client(base_url, registration_user):
     api_client.account.delete_user(registration_user)
 
 
-
 @pytest.fixture()
 def registration_page(browser, base_url) -> RegistrationPage:
     return RegistrationPage(browser, base_url)
@@ -95,3 +95,8 @@ def registration_page(browser, base_url) -> RegistrationPage:
 @pytest.fixture()
 def profile_page(browser, base_url):
     return ProfilePage(browser, base_url)
+
+
+@pytest.fixture()
+def app(browser, base_url) -> AppFacade:
+    return AppFacade(browser, base_url)
