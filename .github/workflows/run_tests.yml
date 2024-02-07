@@ -112,9 +112,14 @@ jobs:
         if: ${{ always() }}
         run: docker exec ${{ env.GIT_BRANCH_TESTS }}-test ls
 
+      - name: "List running containers"
+        if: ${{ always() }}
+        run: docker ps
+
+
       - name: "List directories and files"
         if: ${{ always() }}
-        run: docker exec ls
+        run: docker exec ${{ env.GIT_BRANCH_TESTS }}-test ls
 
       - name: "List contents of /selenium-pytest-allure directory"
         if: ${{ always() }}
