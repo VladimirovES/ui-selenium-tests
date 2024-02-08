@@ -50,6 +50,7 @@ jobs:
         run: |
           echo "BROWSER=chrome:100.0" >> $GITHUB_ENV
           echo "MARKING='regress'" >> $GITHUB_ENV
+          echo "BASE_URL='https://demoqa.com/'">> $GITHUB_ENV
 
 
       - name: Set  values for other workflow dispatch
@@ -57,6 +58,8 @@ jobs:
         run: |
           echo "BROWSER=${{ github.event.inputs.browser }}" >> $GITHUB_ENV
           echo "MARKING=${{ github.event.inputs.marking }}" >> $GITHUB_ENV
+          echo "BASE_URL=${{ github.event.inputs.base_url }}">> $GITHUB_ENV
+
 
 
       - name: Checkout test code
@@ -110,7 +113,7 @@ jobs:
           docker run  \
             --network ${{ env.GIT_BRANCH_TESTS }} \
             --name ${{ env.GIT_BRANCH_TESTS }}-test \
-            ${{ env.MY_IMAGE }} pytest -m ${{ env.MARKING }} --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
+            ${{ env.MY_IMAGE }} pytest -m ${{ env.MARKING }} --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ env.BASE_URL }} --alluredir ${{ env.ALLURE_FOLDER }}
 
       - name: "Copy allure results from container"
         if: ${{ always() }}
@@ -133,7 +136,7 @@ jobs:
     steps:
       - uses: actions/setup-java@v3
         with:
-          distribution: 'microsoft' # See 'Supported distributions' for available options
+          distribution: 'microsoft'
           java-version: '17'
       - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
       - name: Download all workflow run artifacts
@@ -151,7 +154,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: generate-report
     if: always()
-    name: Report publication
+    name: https://vladimiroves.github.io/ui-selenium-tests/
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
@@ -161,27 +164,3 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v1.2.9
 
-#      - name: Generate Allure report
-#        run: allure generate ./allure-results -o ./allure-report --clean
-#
-#      - name: Deploy Allure Report to GitHub Pages
-#        uses: crazy-max/ghaction-github-pages@v2
-#        with:
-#          target_branch: master
-#          build_dir: allure-report
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
