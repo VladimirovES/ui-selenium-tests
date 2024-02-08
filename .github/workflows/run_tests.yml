@@ -110,15 +110,12 @@ jobs:
           docker run  \
             --network ${{ env.GIT_BRANCH_TESTS }} \
             --name ${{ env.GIT_BRANCH_TESTS }}-test \
-            ${{ env.MY_IMAGE }} /bin/sh -c "pytest -m ${{ env.MARKING }} --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}; echo 'Listing results directory:'; ls -la ${{ env.ALLURE_FOLDER }}"
-          echo "Listing running containers:"
-          docker ps
+            ${{ env.MY_IMAGE }} pytest -m ${{ env.MARKING }} --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ github.event.inputs.base_url }} --alluredir ${{ env.ALLURE_FOLDER }}
 
       - name: "Copy allure results from container"
         if: ${{ always() }}
         run: |
           docker cp ${{ env.GIT_BRANCH_TESTS }}-test:/ui-selenium-tests/${{ env.ALLURE_FOLDER }} ./allure-results
-          ls -lah ${{ env.ALLURE_FOLDER }}
 
       - name: "Upload Allure results as an artifact"
         if: ${{ always() }}
@@ -127,24 +124,6 @@ jobs:
           name: allure-results
           path: ./allure-results
 
-
-
-      - name: "List contents of copied container directory"
-        run: ls -la ./container-contents
-
-
-#
-#      - name: "Copy allure results from container"
-#        if: ${{ always() }}
-#        run: |
-#          docker cp ${{ env.GIT_BRANCH_TESTS }}-test:/selenium-pytest-allure/${{ env.ALLURE_FOLDER }} ./
-#
-#
-#
-#      - name: "Copy allure results from container"
-#        if: ${{ always() }}
-#        run: |
-#          docker cp ${{ env.GIT_BRANCH_TESTS }}-test:/selenium-pytest-allure/${{ env.ALLURE_FOLDER }} ./allure-results
 
 
       
