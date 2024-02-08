@@ -99,12 +99,7 @@ jobs:
           docker cp ./browser.configured.json ${{ env.GIT_BRANCH_TESTS }}-selenoid:/browser.json
           docker restart ${{ env.GIT_BRANCH_TESTS }}-selenoid
 
-
-      - name: "List running containers"
-        if: ${{ always() }}
-        run: docker ps
-
-      - name: "Run tests, list results directory, and show running containers"
+      - name: "Run tests"
         run: |
           if [[ -n "$(docker ps -a | grep ${{ env.GIT_BRANCH_TESTS }}-test)" ]]; then docker rm -f ${{ env.GIT_BRANCH_TESTS }}-test; fi
           docker run  \
@@ -123,6 +118,20 @@ jobs:
         with:
           name: allure-results
           path: ./allure-results
+
+      - name: Generate Allure report
+        run: allure generate ./allure-results -o ./allure-report --clean
+
+      - name: Deploy Allure Report to GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v2
+        with:
+          target_branch: master
+          build_dir: allure-report
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
 
 
 
