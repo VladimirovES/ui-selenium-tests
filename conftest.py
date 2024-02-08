@@ -34,7 +34,7 @@ def pytest_addoption(parser):
                      help='Адрес на котором расположен сервер.')
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def browser(request, base_url, api_client):
     browser_name = request.config.getoption('--browser_name')
     headless = request.config.getoption('--headless')
