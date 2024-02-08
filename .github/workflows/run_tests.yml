@@ -112,6 +112,14 @@ jobs:
         run: |
           docker cp ${{ env.GIT_BRANCH_TESTS }}-test:/ui-selenium-tests/${{ env.ALLURE_FOLDER }} ./allure-results
 
+      - name: Install Allure CLI
+        run: |
+          curl -o allure-commandline.zip -Ls "https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.13.8/allure-commandline-2.13.8.zip"
+          unzip allure-commandline.zip -d allure-commandline
+          echo "${PWD}/allure-commandline/allure-2.13.8/bin" >> $GITHUB_PATH
+      
+      
+
       - name: "Upload Allure results as an artifact"
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
