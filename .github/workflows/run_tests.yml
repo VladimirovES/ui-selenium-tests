@@ -122,7 +122,7 @@ jobs:
 
   generate-report:
     runs-on: ubuntu-latest
-    needs: test
+    needs: tests
     name: Generate report
     steps:
       - uses: actions/setup-java@v3
