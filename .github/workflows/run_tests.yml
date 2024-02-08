@@ -112,13 +112,6 @@ jobs:
         run: |
           docker cp ${{ env.GIT_BRANCH_TESTS }}-test:/ui-selenium-tests/${{ env.ALLURE_FOLDER }} ./allure-results
 
-      - name: Install Allure CLI
-        run: |
-          curl -o allure-commandline.zip -Ls "https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.13.8/allure-commandline-2.13.8.zip"
-          unzip allure-commandline.zip -d allure-commandline
-          echo "${PWD}/allure-commandline/allure-2.13.8/bin" >> $GITHUB_PATH
-      
-      
 
       - name: "Upload Allure results as an artifact"
         if: ${{ always() }}
@@ -127,27 +120,61 @@ jobs:
           name: allure-results
           path: ./allure-results
 
-      - name: Generate Allure report
-        run: allure generate ./allure-results -o ./allure-report --clean
-
-      - name: Deploy Allure Report to GitHub Pages
-        uses: crazy-max/ghaction-github-pages@v2
+  generate-report:
+    runs-on: ubuntu-latest
+    needs: test
+    name: Generate report
+    steps:
+      - uses: actions/setup-java@v3
         with:
-          target_branch: master
-          build_dir: allure-report
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          distribution: 'microsoft' # See 'Supported distributions' for available options
+          java-version: '17'
+      - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+      - run: allure generate -c allure-results -o _site
+      - name: Store generated report
+        uses: actions/upload-artifact@v3
+        with:
+          name: _site
+          path:
+            _site
+          retention-days: 1
 
+  publish-report:
+    runs-on: ubuntu-latest
+    needs: generate-report
+    name: Report publication
+    steps:
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v2
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1.2.9
 
-
-
-
-
-      
-          
-
-          
-  
-  
-          
-      
+#      - name: Generate Allure report
+#        run: allure generate ./allure-results -o ./allure-report --clean
+#
+#      - name: Deploy Allure Report to GitHub Pages
+#        uses: crazy-max/ghaction-github-pages@v2
+#        with:
+#          target_branch: master
+#          build_dir: allure-report
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
