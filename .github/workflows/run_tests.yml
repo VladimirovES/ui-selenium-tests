@@ -29,6 +29,11 @@ on:
   repository_dispatch:
     types: [ trigger-run-test ]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   tests:
     name: Run tests
