@@ -52,7 +52,7 @@ class BasePage:
     def assert_url_window_eql(self, url: str, index_window: int = 0):
         self.switch_to_next_window(index_window)
         self._wait_for_url_to_be(url)
-        assert_data_is_equal(url, self.get_page_url())
+        assert_data_is_equal(url, self.get_page_url(), name='URL открытой страницы совпадает')
 
     def _wait_for_url_to_be(self, url: str, timeout: int = 10):
         try:
