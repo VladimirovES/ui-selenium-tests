@@ -1,0 +1,166 @@
+name: Run tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      Marking:
+        description: 'marking'
+        required: True
+        type: choice
+        options:
+          - regress
+          - profile
+          - login
+      browser:
+        description: "Browser"
+        required: true
+        type: choice
+        options:
+          - chrome:100.0
+          - firefox:97.0
+        default: chrome
+      base_url:
+        description: "URL"
+        required: true
+        default: "https://demoqa.com/"
+        type: string
+
+
+  repository_dispatch:
+    types: [ trigger-run-test ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Set branch env for tests"
+        shell: bash
+        run: |
+          echo "GIT_BRANCH_TESTS=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+
+      - name: Set values for trigger env
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          echo "BROWSER=chrome:100.0" >> $GITHUB_ENV
+          echo "MARKING='regress'" >> $GITHUB_ENV
+          echo "BASE_URL='https://demoqa.com/'">> $GITHUB_ENV
+
+
+      - name: Set  values for other workflow dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "BROWSER=${{ github.event.inputs.browser }}" >> $GITHUB_ENV
+          echo "MARKING=${{ github.event.inputs.marking }}" >> $GITHUB_ENV
+          echo "BASE_URL=${{ github.event.inputs.base_url }}">> $GITHUB_ENV
+
+
+
+      - name: Checkout test code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.GIT_BRANCH_TESTS }}
+          path: test-rep
+
+      - name: 'Set name image'
+        shell: bash
+        run: |
+          echo "MY_IMAGE=mytestimage" >> $GITHUB_ENV
+
+
+      - name: Build Docker image
+        run: docker build test-rep/ -t ${{ env.MY_IMAGE}} -f test-rep/Dockerfile
+
+
+      - name: "Set allure envs"
+        shell: bash
+        run: |
+          echo "ALLURE_FOLDER=results-${{ env.GIT_BRANCH_TESTS }}" >> $GITHUB_ENV
+
+      - name: "Create network"
+        shell: bash
+        run: |
+          if [[ -z "$(docker network ls | grep ${{ env.GIT_BRANCH_TESTS }})" ]]; then docker network create --attachable ${{ env.GIT_BRANCH_TESTS }}; fi
+
+      - name: "Create selenoid"
+        shell: bash
+        run: |
+          if [[ -n "$(docker ps -a | grep ${{ env.GIT_BRANCH_TESTS }}-selenoid)" ]]; then docker rm -f ${{ env.GIT_BRANCH_TESTS }}-selenoid; fi
+          
+          envsubst < test-rep/browser.json > browser.configured.json
+          cat browser.configured.json
+          docker pull selenoid/${{ env.BROWSER }}
+          
+          docker run -d --restart always \
+                --network ${{ env.GIT_BRANCH_TESTS }} \
+                --network-alias selenoid \
+                --hostname selenoid \
+                --name ${{ env.GIT_BRANCH_TESTS }}-selenoid \
+                --volume /var/run/docker.sock:/var/run/docker.sock \
+                aerokube/selenoid:latest -conf /browser.json --container-network ${{ env.GIT_BRANCH_TESTS }}
+          docker cp ./browser.configured.json ${{ env.GIT_BRANCH_TESTS }}-selenoid:/browser.json
+          docker restart ${{ env.GIT_BRANCH_TESTS }}-selenoid
+
+      - name: "Run tests"
+        run: |
+          if [[ -n "$(docker ps -a | grep ${{ env.GIT_BRANCH_TESTS }}-test)" ]]; then docker rm -f ${{ env.GIT_BRANCH_TESTS }}-test; fi
+          docker run  \
+            --network ${{ env.GIT_BRANCH_TESTS }} \
+            --name ${{ env.GIT_BRANCH_TESTS }}-test \
+            ${{ env.MY_IMAGE }} pytest -m ${{ env.MARKING }} --remote_browser --browser_name=${{ env.BROWSER }} --base_url=${{ env.BASE_URL }} --alluredir ${{ env.ALLURE_FOLDER }}
+
+      - name: "Copy allure results from container"
+        if: ${{ always() }}
+        run: |
+          docker cp ${{ env.GIT_BRANCH_TESTS }}-test:/ui-selenium-tests/${{ env.ALLURE_FOLDER }} ./allure-results
+
+
+      - name: "Upload Allure results as an artifact"
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: allure-results
+          path: ./allure-results
+
+  generate-report:
+    runs-on: ubuntu-latest
+    needs: tests
+    if: always()
+    name: Generate report
+    steps:
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+      - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+      - run: allure generate -c allure-results -o _site
+      - name: Store generated report
+        uses: actions/upload-artifact@v3
+        with:
+          name: _site
+          path:
+            _site
+          retention-days: 1
+
+  publish-report:
+    runs-on: ubuntu-latest
+    needs: generate-report
+    if: always()
+    name: https://vladimiroves.github.io/ui-selenium-tests/
+    steps:
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v2
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1.2.9
+
