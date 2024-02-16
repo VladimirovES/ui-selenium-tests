@@ -4,7 +4,7 @@ from fixtures.account_fixtures import *
 from fixtures.books_fixture import *
 from data_test.user_data import UserData
 from pages.base.app_facade import AppFacade
-from singleton import BaseUrlSingleton
+from singleton import BaseUrlSingleton, BrowserSingleton
 from utils.api.account_api import AccountApi
 from utils.api.api_facade import ApiFacade
 from utils.driver_factory import DriverFactory
@@ -36,22 +36,15 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope='session')
-def browser(request, api_clients, base_url, ):
-    browser_name = request.config.getoption('--browser_name')
-    headless = request.config.getoption('--headless')
-    remote = request.config.getoption('--remote_browser')
-    executor = request.config.getoption('--executor') or "http://selenoid:4444/wd/hub"
+def browser():
+    driver = BrowserSingleton.get_driver()
+    yield driver
+    BrowserSingleton.quit_driver()
 
-    driver_factory = DriverFactory(browser_name=browser_name,
-                                   headless=headless,
-                                   remote=remote,
-                                   executor_url=executor)
-    driver = driver_factory.get_driver()
-    driver.delete_all_cookies()
-    try:
-        yield driver
-    finally:
-        driver.quit()
+
+@pytest.fixture(scope='session', autouse=True)
+def setup_browser_singleton(request):
+    BrowserSingleton.setup(request)
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
@@ -88,8 +81,8 @@ def api_clients():
 
 
 @pytest.fixture()
-def app(browser) -> AppFacade:
-    return AppFacade(browser)
+def app() -> AppFacade:
+    return AppFacade()
 
 
 @pytest.fixture(scope="session", autouse=True)

@@ -5,14 +5,14 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from models.user import UserAccount
-from singleton import BaseUrlSingleton
+from singleton import BaseUrlSingleton, BrowserSingleton
 from utils.assertions import assert_data_is_equal
 
 
 class BasePage:
 
-    def __init__(self, driver: webdriver):
-        self._driver = driver
+    def __init__(self):
+        self._driver = BrowserSingleton.get_driver()
         self.host = BaseUrlSingleton.get_base_url()
 
     def open_page(self, route: str = None):

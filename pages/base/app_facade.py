@@ -3,12 +3,10 @@ from pages.profile_page.profile_page import ProfilePage
 
 
 class AppFacade:
-
     login: 'LoginPage'
     profile: 'ProfilePage'
 
-    def __init__(self, browser):
-        self._browser = browser
+    def __init__(self, ):
         self._page_instances = {}
 
     def __getattr__(self, name):
@@ -18,6 +16,6 @@ class AppFacade:
 
     def _initialize_page(self, name):
         if name == "login":
-            return LoginPage(self._browser)
+            return LoginPage()
         elif name == 'profile':
-            return ProfilePage(self._browser)
+            return ProfilePage()

@@ -10,12 +10,13 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+from singleton import BrowserSingleton
 from utils.assertions import assert_data_is_equal, assert_lists_equal
 
 
 class Component(ABC):
-    def __init__(self, driver: webdriver, locator: str, name: str) -> None:
-        self.driver = driver
+    def __init__(self, locator: str, name: str) -> None:
+        self.driver = BrowserSingleton.get_driver()
         self.locator = ('xpath', locator)
         self.name = name
 

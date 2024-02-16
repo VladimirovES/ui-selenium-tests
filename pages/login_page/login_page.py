@@ -6,8 +6,8 @@ from pages.base.base_page import BasePage
 
 
 class LoginPage(BasePage):
-    def __init__(self, driver: webdriver):
-        super().__init__(driver)
+    def __init__(self):
+        super().__init__()
 
         self.username = Input(self._driver,
                               locator="//input[@id='userName']",
