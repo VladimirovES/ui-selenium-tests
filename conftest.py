@@ -88,3 +88,5 @@ def api_client(base_url, registration_user):
 @pytest.fixture()
 def app(browser, base_url) -> AppFacade:
     return AppFacade(browser, base_url)
+
+

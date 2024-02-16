@@ -12,10 +12,11 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def create_user_for_login(base_url):
     user = UserData.user_changes
-    user.userId = AccountApi(base_url=base_url, module='Account').create_user(user)['userID']
-    api_client = ApiFacade(base_url=base_url, auth_token=user.token)
+    user.userId = ApiFacade(base_url=base_url).account.create_user(user)['userID']
     yield user
-    api_client.account.delete_user(user)
+    user.token = AccountApi(base_url=base_url, module='Account').generate_token(user=user)[
+        'token']
+    ApiFacade(base_url=base_url, auth_token=user.token).account.delete_user(user)

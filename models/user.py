@@ -6,8 +6,6 @@ from utils.generator import UserDataGenerator
 class User(BaseModel):
     first_name: str = Field(default_factory=UserDataGenerator.generate_first_name)
     last_name: str = Field(default_factory=UserDataGenerator.generate_last_name)
-    # user_name: str = Field(default_factory=UserDataGenerator.generate_user_name)
-    # password: str = Field(default_factory=lambda: UserDataGenerator.generate_password(length=12))
 
 
 class UserRegistrationResponse(BaseModel):
