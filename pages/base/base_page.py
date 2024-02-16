@@ -4,16 +4,16 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-
 from models.user import UserAccount
+from singleton import BaseUrlSingleton
 from utils.assertions import assert_data_is_equal
 
 
 class BasePage:
 
-    def __init__(self, driver: webdriver, base_url):
+    def __init__(self, driver: webdriver):
         self._driver = driver
-        self.host = base_url
+        self.host = BaseUrlSingleton.get_base_url()
 
     def open_page(self, route: str = None):
         url = f"{self.host}{route}" if route else f"{self.host}"

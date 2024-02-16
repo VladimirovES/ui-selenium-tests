@@ -65,7 +65,7 @@ pastel==0.2.1
 pexpect==4.8.0
 pkginfo==1.8.1
 platformdirs==2.4.0
-pluggy==1.0.0
+pluggy==1.4.0
 poetry==1.1.11
 poetry-core==1.0.7
 prompt-toolkit==3.0.30
@@ -80,8 +80,8 @@ pyOpenSSL==21.0.0
 pyparsing==3.0.6
 pyrsistent==0.20.0
 PySocks==1.7.1
+pytest==8.0.0
 pytest-check==2.3.1
-pytest==6.2.5
 pytest-forked==1.4.0
 pytest-rerunfailures==10.2
 pytest-sugar==0.9.4
