@@ -4,6 +4,7 @@ from fixtures.account_fixtures import *
 from fixtures.books_fixture import *
 from data_test.user_data import UserData
 from pages.base.app_facade import AppFacade
+from singleton import BaseUrlSingleton
 from utils.api.account_api import AccountApi
 from utils.api.api_facade import ApiFacade
 from utils.driver_factory import DriverFactory
@@ -70,13 +71,13 @@ def pytest_runtest_makereport(item):
 
 
 @pytest.fixture(scope='session')
-def api_clients(base_url):
+def api_clients():
     user_clients = {}
 
     for user in [UserData.user1, UserData.user2]:
-        user.userId = AccountApi(base_url=base_url, module='Account').create_user(user)['userID']
-        user.token = AccountApi(base_url=base_url, module='Account').generate_token(user=user)['token']
-        api_client_instance = ApiFacade(base_url=base_url, auth_token=user.token)
+        user.userId = AccountApi(module='Account').create_user(user)['userID']
+        user.token = AccountApi(module='Account').generate_token(user=user)['token']
+        api_client_instance = ApiFacade(auth_token=user.token)
 
         user_clients[user.userId] = api_client_instance
 
@@ -87,9 +88,11 @@ def api_clients(base_url):
 
 
 @pytest.fixture()
-def app(browser, base_url) -> AppFacade:
-    return AppFacade(browser, base_url)
+def app(browser) -> AppFacade:
+    return AppFacade(browser)
 
 
-
-
+@pytest.fixture(scope="session", autouse=True)
+def setup_base_url(request):
+    base_url = request.config.getoption("--base_url")
+    BaseUrlSingleton.set_base_url(base_url)

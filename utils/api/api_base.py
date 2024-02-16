@@ -6,12 +6,13 @@ import requests
 from decouple import config
 
 from logging_config import allure_response_and_payload
+from singleton import BaseUrlSingleton
 
 
 class ApiClient:
 
-    def __init__(self, base_url,  module: str, auth_token=None):
-        self.url = base_url
+    def __init__(self,  module: str, auth_token=None):
+        self.url = BaseUrlSingleton.get_base_url()
         self.module = module
         self.base_url = self.url + self.module + config('VERSION_API')
         self.auth_token = auth_token

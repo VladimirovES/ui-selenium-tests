@@ -7,8 +7,8 @@ from pages.base.base_page import BasePage
 
 
 class ProfilePage(BasePage):
-    def __init__(self, driver: webdriver, base_url):
-        super().__init__(driver, base_url)
+    def __init__(self, driver: webdriver):
+        super().__init__(driver)
 
     def open_page(self, route='profile'):
         super().open_page(route)

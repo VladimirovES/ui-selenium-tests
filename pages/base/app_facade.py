@@ -7,9 +7,8 @@ class AppFacade:
     login: 'LoginPage'
     profile: 'ProfilePage'
 
-    def __init__(self, browser, base_url):
+    def __init__(self, browser):
         self._browser = browser
-        self._base_url = base_url
         self._page_instances = {}
 
     def __getattr__(self, name):
@@ -19,6 +18,6 @@ class AppFacade:
 
     def _initialize_page(self, name):
         if name == "login":
-            return LoginPage(self._browser, self._base_url)
+            return LoginPage(self._browser)
         elif name == 'profile':
-            return ProfilePage(self._browser, self._base_url)
+            return ProfilePage(self._browser)
