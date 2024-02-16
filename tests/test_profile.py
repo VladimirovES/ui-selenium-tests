@@ -26,7 +26,7 @@ class TestProfile:
         expected_url = base_url + f'{Routing.login}'
 
         # Act
-        app.profile.auth(user=UserData.user1).open_page()
+        app.profile.auth(user=UserData.user2).open_page()
         app.profile.log_out.click()
 
         # Assert
