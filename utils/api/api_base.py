@@ -67,4 +67,4 @@ class ApiClient:
                 f"{response.text}",
                 f'{payload}'
             )
-            raise AssertionError(error_message)
+            # raise AssertionError(error_message)

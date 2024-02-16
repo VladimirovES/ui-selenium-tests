@@ -2,6 +2,7 @@ import allure
 
 import pytest
 
+from data_test.books_data import BooksData
 from data_test.user_data import UserData
 from utils.routing import Routing
 
@@ -30,3 +31,12 @@ class TestProfile:
 
         # Assert
         app.profile.assert_url_window_eql(expected_url)
+
+    @allure.title('Book present in books table')
+    @pytest.mark.parametrize('add_book', [BooksData.book1], indirect=True)
+    def test_books_in_profile(self, app, add_book):
+        # Act
+        app.profile.auth(user=UserData.user1).open_page()
+
+        # Assert
+        app.profile.assert_book_in_table(book=add_book)

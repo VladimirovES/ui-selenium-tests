@@ -21,7 +21,7 @@ class BasePage:
             self._driver.get(url)
 
     def auth(self, user: UserAccount):
-        with allure.step(f"Добавить куки для пользователя: {user.userId}"):
+        with allure.step(f"Добавить куки для пользователя: {user.userName}"):
             self._driver.get(self.host)
             cookies = {'token': user.token,
                        'userID': user.userId,

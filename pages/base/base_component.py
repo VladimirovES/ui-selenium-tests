@@ -1,5 +1,6 @@
 from abc import abstractmethod, ABC
 
+import pytest_check as check
 import allure
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -13,9 +14,9 @@ from utils.assertions import assert_data_is_equal, assert_lists_equal
 
 
 class Component(ABC):
-    def __init__(self, driver: webdriver, locator: tuple, name: str) -> None:
+    def __init__(self, driver: webdriver, locator: str, name: str) -> None:
         self.driver = driver
-        self.locator = locator
+        self.locator = ('xpath', locator)
         self.name = name
 
     @abstractmethod
@@ -76,15 +77,21 @@ class Component(ABC):
         with allure.step(f'Нажать {self._type_of}: "{self._format_name(**kwargs)}".'):
             self._find_element(**kwargs).click()
 
+
     def assert_visibility(self, is_visible=True, **kwargs) -> None:
         vision_text = 'Отображается' if is_visible else 'Не отображается'
         with allure.step(f'Assert: "{self._type_of} - "{self._format_name(**kwargs)}" {vision_text} на странице.'):
-            if is_visible:
-                element = self._wait_for_element(self._format_locator(**kwargs))
-                assert element and element.is_displayed(), f"{self._type_of} '{self._format_name(**kwargs)}' should be visible"
-            else:
-                is_invisible = self._wait_for_desapear(self._format_locator(**kwargs))
-                assert is_invisible, f"{self._type_of} - '{self._format_name(**kwargs)}' should not be visible"
+            try:
+                if is_visible:
+                    element = self._wait_for_element(self._format_locator(**kwargs))
+                    check.is_true(element.is_displayed(),
+                                  f"{self._type_of} '{self._format_name(**kwargs)}' should be visible")
+                else:
+                    is_invisible = self._wait_for_desapear(self._format_locator(**kwargs))
+                    check.is_true(is_invisible,
+                                  f"{self._type_of} - '{self._format_name(**kwargs)}' should not be visible")
+            except TimeoutException:
+                check.fail(f"{self._type_of} - '{self._format_name(**kwargs)}' visibility check failed")
 
     def get_text(self, **kwargs):
         return self._find_element(**kwargs).text
@@ -99,6 +106,11 @@ class Component(ABC):
             element = self._find_element(**kwargs)
             ActionChains(self.driver, duration=600).move_to_element(element).perform()
 
+    def assert_attribute_eql(self, attribute, expected, **kwargs):
+        actual = self._find_element(**kwargs).get_attribute(attribute)
+        assert_data_is_equal(actual=actual, expected=expected,
+                             name=f'Элемент: "{self._type_of}": "{self._format_name(**kwargs)}"значение атрибута "{expected}"')
+
 
 class Iframe(Component):
 
@@ -109,9 +121,6 @@ class Iframe(Component):
     def switch_to_iframe(self, **kwargs):
         iframe = self._find_element(**kwargs)
         self.driver.switch_to.frame(iframe)
-
-
-
 
 
 class ListElements(Component):
@@ -151,7 +160,7 @@ class ListElements(Component):
 class Text(Component):
     @property
     def _type_of(self) -> str:
-        return 'Title'
+        return 'Text'
 
 
 class Button(Component):
@@ -198,3 +207,15 @@ class Input(Component):
             element = self._find_element(**kwargs)
             element.clear()
             element.send_keys(Keys.BACKSPACE * len(element.get_attribute("value")))
+
+
+class Image(Component):
+
+    @property
+    def _type_of(self):
+        return 'Image'
+
+    def assert_image_link_eql(self, expected, **kwargs):
+        actual = self._find_element(**kwargs).get_attribute('src')
+        assert_data_is_equal(actual=actual, expected=expected,
+                             name=f'"{self._type_of}": "{self._format_name(**kwargs)}"имеет ссылку картинки -  "{expected}"')

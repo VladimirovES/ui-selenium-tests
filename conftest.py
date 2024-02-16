@@ -1,9 +1,9 @@
 import allure
 
 from fixtures.account_fixtures import *
+from fixtures.books_fixture import *
 from data_test.user_data import UserData
 from pages.base.app_facade import AppFacade
-from pages.profile_page.profile_page import ProfilePage
 from utils.api.account_api import AccountApi
 from utils.api.api_facade import ApiFacade
 from utils.driver_factory import DriverFactory
@@ -35,7 +35,7 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope='session')
-def browser(request, base_url, api_client):
+def browser(request, api_clients, base_url, ):
     browser_name = request.config.getoption('--browser_name')
     headless = request.config.getoption('--headless')
     remote = request.config.getoption('--remote_browser')
@@ -70,19 +70,20 @@ def pytest_runtest_makereport(item):
 
 
 @pytest.fixture(scope='session')
-def registration_user(base_url):
-    user = UserData.user1
-    user.userId = AccountApi(base_url=base_url, module='Account').create_user(user)['userID']
-    return user
+def api_clients(base_url):
+    user_clients = {}
 
+    for user in [UserData.user1, UserData.user2]:
+        user.userId = AccountApi(base_url=base_url, module='Account').create_user(user)['userID']
+        user.token = AccountApi(base_url=base_url, module='Account').generate_token(user=user)['token']
+        api_client_instance = ApiFacade(base_url=base_url, auth_token=user.token)
 
-@pytest.fixture(scope='session')
-def api_client(base_url, registration_user):
-    registration_user.token = AccountApi(base_url=base_url, module='Account').generate_token(user=registration_user)[
-        'token']
-    api_client = ApiFacade(base_url=base_url, auth_token=registration_user.token)
-    yield api_client
-    api_client.account.delete_user(registration_user)
+        user_clients[user.userId] = api_client_instance
+
+    yield user_clients
+
+    for user in [UserData.user1, UserData.user2]:
+        user_clients[user.userId].account.delete_user(user)
 
 
 @pytest.fixture()
