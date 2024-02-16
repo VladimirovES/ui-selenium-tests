@@ -80,7 +80,7 @@ class Component(ABC):
 
     def assert_visibility(self, is_visible=True, **kwargs) -> None:
         vision_text = 'Отображается' if is_visible else 'Не отображается'
-        with allure.step(f'Assert: "{self._type_of} - "{self._format_name(**kwargs)}" {vision_text} на странице.'):
+        with allure.step(f'Assert: "{self._type_of}" - "{self._format_name(**kwargs)}" {vision_text} на странице.'):
             try:
                 if is_visible:
                     element = self._wait_for_element(self._format_locator(**kwargs))

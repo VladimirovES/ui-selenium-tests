@@ -1,5 +1,5 @@
+import allure
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 
 from models.books import Book
 from pages.base.base_component import Button, Text, Input, Image
@@ -28,22 +28,21 @@ class ProfilePage(BasePage):
                                        name='Search Books')
 
         self.image_book = Image(self._driver, locator="//div[@class='rt-tr-group']['{line}']//img",
-                                name='Image book "{line}"')
+                                name='Image book')
         self.title_book = Text(self._driver,
                                locator="//div[@class='rt-tr-group']['{line}']//*[contains(@id, 'see-book-{title}')]",
-                               name='Title book')
+                               name='Title book "{title}"')
 
         self.author_book = Text(self._driver,
                                 locator="//div[@class='rt-tr-group']['{line}']//div[text()='{author}']",
-                                name='Author book')
+                                name='Author book "{author}"')
         self.publisher = Text(self._driver,
                               locator="//div[@class='rt-tr-group']['{line}']//div[text()='{publisher}']",
-                              name='Publisher')
+                              name='Publisher "{publisher}"')
 
     def assert_book_in_table(self, book: Book, line=1):
-        self.image_book.assert_visibility(line=line)
-        self.title_book.assert_visibility(line=line, title=book.title)
-        self.author_book.assert_visibility(line=line, author=book.author)
-        self.publisher.assert_visibility(line=line, publisher=book.publisher)
-
-
+        with allure.step(f'Book data is present in line № {line}'):
+            self.image_book.assert_visibility(line=line)
+            self.title_book.assert_visibility(line=line, title=book.title)
+            self.author_book.assert_visibility(line=line, author=book.author)
+            self.publisher.assert_visibility(line=line, publisher=book.publisher)
