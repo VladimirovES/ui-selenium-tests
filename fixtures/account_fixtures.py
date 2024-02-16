@@ -18,7 +18,4 @@ def create_user_for_login(base_url):
     user.userId = AccountApi(base_url=base_url, module='Account').create_user(user)['userID']
     api_client = ApiFacade(base_url=base_url, auth_token=user.token)
     yield user
-    try:
-        api_client.account.delete_user(user)
-    except:
-        logger.info(f'Не получилось удалить пользователя {user.userId}')
+    api_client.account.delete_user(user)
