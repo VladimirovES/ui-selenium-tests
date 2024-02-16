@@ -80,6 +80,7 @@ pyOpenSSL==21.0.0
 pyparsing==3.0.6
 pyrsistent==0.20.0
 PySocks==1.7.1
+pytest-check==2.3.1
 pytest==6.2.5
 pytest-forked==1.4.0
 pytest-rerunfailures==10.2
