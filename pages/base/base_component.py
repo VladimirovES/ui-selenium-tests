@@ -53,30 +53,42 @@ class Component(ABC):
     def _scroll_to_element(self, element):
         self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
 
+    def _process_display_element(self, locator, scroll_to_elem):
+        """Обработка отображаемого элемента."""
+        try:
+            element = self._wait_for_element(locator)
+            if scroll_to_elem:
+                self._scroll_to_element(element)
+            return element
+        except TimeoutException:
+            self._raise_visibility_error(locator)
+
+    def _process_disappear_element(self, locator):
+        """Обработка исчезновения элемента."""
+        try:
+            return self._wait_for_desapear(locator) or None
+        except TimeoutException:
+            return None
+
+    def _raise_visibility_error(self, locator):
+        """Генерация ошибки видимости с добавлением в отчет Allure."""
+        error_message = f"'{self.name}' не отображается, хотя ожидается, что должен быть видимым."
+        with allure.step(error_message):
+            raise AssertionError(f"{error_message}\n Locator: {locator[1]}")
+
     def _find_element(self, should_display=True, scroll_to_elem=True, **kwargs):
         self._wait_loaders_and_skeletons()
 
         locator = self._format_locator(**kwargs)
 
-        try:
-            if should_display:
-                element = self._wait_for_element((locator[0], locator[1]))
-                if scroll_to_elem:
-                    self._scroll_to_element(element)
-                return element
-            else:
-                return self._wait_for_desapear((locator[0], locator[1])) or None
-        except TimeoutException:
-            if should_display:
-                raise AssertionError(
-                    f"'{self.name}' не отображается, хотя ожидается, что должен быть видимым, \n locator: {locator[1]}")
-            else:
-                return None
+        if should_display:
+            return self._process_display_element(locator, scroll_to_elem)
+        else:
+            return self._process_disappear_element(locator)
 
     def click(self, **kwargs):
         with allure.step(f'Нажать {self._type_of}: "{self._format_name(**kwargs)}".'):
             self._find_element(**kwargs).click()
-
 
     def assert_visibility(self, is_visible=True, **kwargs) -> None:
         vision_text = 'Отображается' if is_visible else 'Не отображается'
