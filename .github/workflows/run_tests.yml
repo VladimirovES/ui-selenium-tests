@@ -154,13 +154,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: generate-report
     if: always()
-    name: https://vladimiroves.github.io/ui-selenium-tests/
+    name: Deploy reports on GitHub Pages
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v2
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1.2.9
+
+      - name: Add link to job summary
+        run: |
+          echo '### Отчет Allure' >> $GITHUB_STEP_SUMMARY
+          echo '[Открыть отчет Allure](https://vladimiroves.github.io/ui-selenium-tests/)' >> $GITHUB_STEP_SUMMARY
+
 
