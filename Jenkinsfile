@@ -25,4 +25,10 @@ pipeline {
             }
         }
     }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'test_results/**', fingerprint: true
+        }
+    }
 }
