@@ -29,6 +29,15 @@ pipeline {
     post {
         always {
             archiveArtifacts artifacts: 'test_results/**', fingerprint: true
+            script {
+                allure([
+                    includeProperties: false, 
+                    jdk: '', 
+                    properties: [], 
+                    reportBuildPolicy: 'ALWAYS', 
+                    results: [[path: 'test_results']]
+                ])
+            }
         }
     }
 }
