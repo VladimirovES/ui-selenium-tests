@@ -171,6 +171,6 @@ jobs:
       - name: Add link to job summary
         run: |
           echo '### Allure-report' >> $GITHUB_STEP_SUMMARY
-          echo '[Открыть отчет Allure](https://vladimiroves.github.io/ui-selenium-tests/)' >> $GITHUB_STEP_SUMMARY
+          echo '[Открыть отчет Allure](https://vladimiroves.github.io/ui-selenium-tests/#behaviors)' >> $GITHUB_STEP_SUMMARY
 
 
