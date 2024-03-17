@@ -54,7 +54,7 @@ def pytest_addoption(parser):
 #         driver.quit()
 
 @pytest.fixture(scope='session')
-def browser(request):
+def browser(request, api_clients):
     browser_name = request.config.getoption('--browser_name')
     headless = request.config.getoption('--headless')
     remote = request.config.getoption('--remote_browser')
