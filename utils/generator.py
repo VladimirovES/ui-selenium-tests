@@ -2,17 +2,25 @@ import random
 import string
 
 from faker import Faker
+
+
 class GeneralGenerator:
 
     @staticmethod
     def generate_random_string(length=10):
+        random.seed(55)
         return "".join(random.choice(string.ascii_lowercase) for _ in range(length))
+    @staticmethod
+    def get_random_str_without_seed(length=10):
+        return "".join(random.choice(string.ascii_letters) for _ in range(length))
+
 
 class UserDataGenerator:
     fake = Faker()
 
     @staticmethod
     def generate_first_name():
+        random.seed(42)
         return UserDataGenerator.fake.first_name()
 
     @staticmethod
@@ -21,6 +29,7 @@ class UserDataGenerator:
 
     @staticmethod
     def generate_user_name():
+        # random.seed(42)
         return UserDataGenerator.fake.user_name()
 
     @staticmethod
@@ -42,5 +51,3 @@ class UserDataGenerator:
         random.shuffle(password)
 
         return ''.join(password)
-
-
