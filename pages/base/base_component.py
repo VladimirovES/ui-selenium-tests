@@ -2,7 +2,6 @@ from abc import abstractmethod, ABC
 
 import pytest_check as check
 import allure
-from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import ActionChains, Keys
 
@@ -11,11 +10,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from utils.assertions import assert_data_is_equal, assert_lists_equal
+from singletons import WebDriverSingleton
+
 
 
 class Component(ABC):
-    def __init__(self, driver: webdriver, locator: str, name: str) -> None:
-        self.driver = driver
+    def __init__(self, locator: str, name: str) -> None:
+        self.driver = WebDriverSingleton.get_driver()
         self.locator = ('xpath', locator)
         self.name = name
 
@@ -35,12 +36,6 @@ class Component(ABC):
     def _wait_for_desapear(self, locator, timeout=10):
         return WebDriverWait(self.driver, timeout).until(EC.invisibility_of_element_located(locator))
 
-    def _wait_loaders_and_skeletons(self):
-        """
-        Дождаться загрузки страницы пока не исчезнет лоадер(загрузчик)
-        """
-        self._wait_for_desapear(('xpath', "//*[contains(@class, 'loader-framework')]"), timeout=20)
-        self._wait_for_desapear(('xpath', "//div[contains(@class, 'skeleton')]"), timeout=20)
 
     def _format_locator(self, **kwargs):
         locator_by, locator_value = self.locator
@@ -77,8 +72,6 @@ class Component(ABC):
             raise AssertionError(f"{error_message}\n Locator: {locator[1]}")
 
     def _find_element(self, should_display=True, scroll_to_elem=True, **kwargs):
-        self._wait_loaders_and_skeletons()
-
         locator = self._format_locator(**kwargs)
 
         if should_display:
@@ -142,7 +135,6 @@ class ListElements(Component):
 
     def _find_elements(self, **kwargs) -> list[WebElement]:
         locator = self._format_locator(**kwargs)
-        self._wait_loaders_and_skeletons()
         elements = self._wait_for_elements(locator)
         if not elements:
             raise AssertionError(f"Элементы по локатору {locator} не найдены.")

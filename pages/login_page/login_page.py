@@ -6,15 +6,15 @@ from pages.base.base_page import BasePage
 
 
 class LoginPage(BasePage):
-    def __init__(self, driver: webdriver):
-        super().__init__(driver)
+    def __init__(self):
+        super().__init__()
 
-        self.username = Input(self._driver,
-                              locator="//input[@id='userName']",
-                              name='UserName')
-        self.password = Input(self._driver, locator="//input[@id='password']", name='Password')
-        self.login = Button(self._driver, locator="//button[@id='login']", name='Login')
-        self.validation_error = Text(self._driver, locator="//p[@class='mb-1']",
+        self.username = Input(
+            locator="//input[@id='userName']",
+            name='UserName')
+        self.password = Input(locator="//input[@id='password']", name='Password')
+        self.login = Button(locator="//button[@id='login']", name='Login')
+        self.validation_error = Text(locator="//p[@class='mb-1']",
                                      name='Invalid Login or Password')
 
     def open_page(self, route='login'):

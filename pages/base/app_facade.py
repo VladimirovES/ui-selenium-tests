@@ -18,6 +18,6 @@ class AppFacade:
 
     def _initialize_page(self, name):
         if name == "login":
-            return LoginPage(self._browser)
+            return LoginPage()
         elif name == 'profile':
-            return ProfilePage(self._browser)
+            return ProfilePage()

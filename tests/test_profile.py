@@ -4,6 +4,7 @@ import pytest
 
 from data_test.books_data import BooksData
 from data_test.user_data import UserData
+from singletons import BaseUrlSingleton
 from utils.routing import Routing
 
 
@@ -21,9 +22,9 @@ class TestProfile:
         app.profile.username.assert_text_eql(expected=UserData.user1.userName)
 
     @allure.title('Logout')
-    def test_logout_user(self, app, base_url):
+    def test_logout_user(self, app):
         # Arrange
-        expected_url = base_url + f'{Routing.login}'
+        expected_url = BaseUrlSingleton.get_base_url() + f'{Routing.login}'
 
         # Act
         app.profile.auth(user=UserData.user2).open_page()

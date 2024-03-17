@@ -6,7 +6,7 @@ import requests
 from decouple import config
 
 from logging_config import allure_response_and_payload
-from singleton import BaseUrlSingleton
+from singletons import BaseUrlSingleton
 
 
 class ApiClient:

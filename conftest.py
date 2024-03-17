@@ -4,7 +4,7 @@ from fixtures.account_fixtures import *
 from fixtures.books_fixture import *
 from data_test.user_data import UserData
 from pages.base.app_facade import AppFacade
-from singleton import BaseUrlSingleton
+from singletons import WebDriverSingleton, BaseUrlSingleton
 from utils.api.account_api import AccountApi
 from utils.api.api_facade import ApiFacade
 from utils.driver_factory import DriverFactory
@@ -35,23 +35,37 @@ def pytest_addoption(parser):
                      help='Адрес на котором расположен сервер.')
 
 
+# @pytest.fixture(scope='session')
+# def browser(request, api_clients, base_url, ):
+#     browser_name = request.config.getoption('--browser_name')
+#     headless = request.config.getoption('--headless')
+#     remote = request.config.getoption('--remote_browser')
+#     executor = request.config.getoption('--executor') or "http://selenoid:4444/wd/hub"
+#
+#     driver_factory = DriverFactory(browser_name=browser_name,
+#                                    headless=headless,
+#                                    remote=remote,
+#                                    executor_url=executor)
+#     driver = driver_factory.get_driver()
+#     driver.delete_all_cookies()
+#     try:
+#         yield driver
+#     finally:
+#         driver.quit()
+
 @pytest.fixture(scope='session')
-def browser(request, api_clients, base_url, ):
+def browser(request):
     browser_name = request.config.getoption('--browser_name')
     headless = request.config.getoption('--headless')
     remote = request.config.getoption('--remote_browser')
-    executor = request.config.getoption('--executor') or "http://selenoid:4444/wd/hub"
+    executor = request.config.getoption('--executor')
 
-    driver_factory = DriverFactory(browser_name=browser_name,
-                                   headless=headless,
-                                   remote=remote,
-                                   executor_url=executor)
-    driver = driver_factory.get_driver()
-    driver.delete_all_cookies()
+    WebDriverSingleton.initialize_driver(browser_name, headless, remote, executor)
+    driver = WebDriverSingleton.get_driver()
     try:
         yield driver
     finally:
-        driver.quit()
+        WebDriverSingleton.quit_driver()
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)

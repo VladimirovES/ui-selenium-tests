@@ -12,10 +12,10 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 
-@pytest.fixture()
+@pytest.fixture(scope='class')
 def create_user_for_login():
     user = UserData.user_changes
-    user.userId = ApiFacade().account.create_user(user)['userID']
+    user.userId = ApiFacade().account.create_user(user).get('userID')
     yield user
     user.token = AccountApi(module='Account').generate_token(user=user)[
         'token']

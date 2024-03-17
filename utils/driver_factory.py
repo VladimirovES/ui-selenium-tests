@@ -8,14 +8,12 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.remote.file_detector import LocalFileDetector
 
 
-
 class DriverFactory:
     def __init__(self, browser_name, headless, remote, executor_url):
         self.browser_name = browser_name
         self.headless = headless
         self.remote = remote
         self.executor_url = executor_url or "http://selenoid:4444/wd/hub"
-
 
     def get_driver(self):
         if 'chrome' in self.browser_name.lower():
@@ -24,7 +22,6 @@ class DriverFactory:
             return self._create_firefox_driver()
         else:
             raise ValueError(f"Browser '{self.browser_name}' is not supported.")
-
 
     def _create_chrome_driver(self):
         chrome_options = self._get_chrome_options()
@@ -93,4 +90,3 @@ class DriverFactory:
         options.set_preference("pdfjs.disabled", True)
 
         return options
-
